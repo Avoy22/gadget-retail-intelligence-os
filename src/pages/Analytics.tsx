@@ -4,13 +4,14 @@ import { CategoryChart } from '../components/analytics/CategoryChart'
 import { RevenueChart } from '../components/analytics/RevenueChart'
 import { PageHeader } from '../components/common/PageHeader'
 import { StatCard } from '../components/common/StatCard'
-import { categoryMetrics, salesMetrics } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 import { formatCurrency, formatNumber } from '../utils/format'
 
 export function Analytics() {
-  const trailingRevenue = salesMetrics.reduce((sum, entry) => sum + entry.revenue, 0)
-  const trailingUnits = salesMetrics.reduce((sum, entry) => sum + entry.units, 0)
-  const avgMargin = salesMetrics.reduce((sum, entry) => sum + entry.margin, 0) / salesMetrics.length
+  const { categoryMetrics, derivedSalesMetrics } = useAppData()
+  const trailingRevenue = derivedSalesMetrics.reduce((sum, entry) => sum + entry.revenue, 0)
+  const trailingUnits = derivedSalesMetrics.reduce((sum, entry) => sum + entry.units, 0)
+  const avgMargin = derivedSalesMetrics.reduce((sum, entry) => sum + entry.margin, 0) / derivedSalesMetrics.length
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -26,14 +27,14 @@ export function Analytics() {
         <StatCard label="Members served" value="38.4k" trend="+9.8% YoY" icon={Users} />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-2">
-        <RevenueChart />
-        <CategoryChart />
+        <RevenueChart data={derivedSalesMetrics} />
+        <CategoryChart data={categoryMetrics} />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="h-80 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-bold text-slate-950">Units and margin</h2>
           <ResponsiveContainer width="100%" height="85%">
-            <LineChart data={salesMetrics}>
+            <LineChart data={derivedSalesMetrics}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" stroke="#64748b" />
               <YAxis stroke="#64748b" />

@@ -8,12 +8,15 @@ export type ProductCategory =
   | 'Accessories'
   | 'Smart Home'
 
+export type ProductStatus = 'active' | 'draft' | 'discontinued'
+
 export type Product = {
   id: string
   slug: string
   name: string
   brand: string
   category: ProductCategory
+  status: ProductStatus
   description: string
   price: number
   msrp: number
@@ -44,24 +47,41 @@ export type InventoryItem = {
   updatedAt: string
 }
 
+export type Customer = {
+  id: string
+  name: string
+  email: string
+  phone?: string
+}
+
 export type Reservation = {
   id: string
   productId: string
   storeId: string
+  customerId?: string
   customer: string
+  email?: string
+  phone?: string
   date: string
   status: 'Ready' | 'Pending pickup' | 'Expired' | 'Cancelled'
+  notes?: string
 }
 
 export type RepairRequest = {
   id: string
   productId: string
   storeId: string
+  customerId?: string
   customer: string
+  email: string
+  phone?: string
+  serialNumber?: string
   issue: string
   priority: 'Low' | 'Medium' | 'High'
   status: 'New' | 'Diagnosing' | 'Waiting parts' | 'Ready' | 'Closed'
+  technicianNotes?: string
   createdAt: string
+  updatedAt: string
 }
 
 export type CompetitorPrice = {
@@ -71,6 +91,17 @@ export type CompetitorPrice = {
   price: number
   checkedAt: string
   availability: 'In stock' | 'Limited' | 'Out of stock'
+}
+
+export type Order = {
+  id: string
+  customerId: string
+  productId: string
+  storeId: string
+  quantity: number
+  total: number
+  status: 'Draft' | 'Paid' | 'Fulfilled' | 'Cancelled'
+  createdAt: string
 }
 
 export type SalesMetric = {

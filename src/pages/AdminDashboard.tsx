@@ -5,18 +5,26 @@ import { Badge } from '../components/common/Badge'
 import { DataTable } from '../components/common/DataTable'
 import { PageHeader } from '../components/common/PageHeader'
 import { StatCard } from '../components/common/StatCard'
-import { getProduct, getStore } from '../data/lookups'
-import { inventory, repairRequests, reservations, salesMetrics } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 import { formatCurrency, formatNumber, getStockStatus } from '../utils/format'
 
 export function AdminDashboard() {
+  const {
+    categoryMetrics,
+    derivedSalesMetrics,
+    getProduct,
+    getStore,
+    inventory,
+    repairRequests,
+    reservations,
+  } = useAppData()
   const lowStock = inventory.filter((item) => getStockStatus(item).tone !== 'success').slice(0, 6)
   const activeRepairs = repairRequests.filter((request) => request.status !== 'Closed').length
   const highPriorityRepairs = repairRequests.filter((request) => request.priority === 'High' && request.status !== 'Closed').length
   const readyReservations = reservations.filter((reservation) => reservation.status === 'Ready').length
   const totalUnits = inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
-  const latest = salesMetrics[salesMetrics.length - 1]
-  const previous = salesMetrics[salesMetrics.length - 2]
+  const latest = derivedSalesMetrics[derivedSalesMetrics.length - 1]
+  const previous = derivedSalesMetrics[derivedSalesMetrics.length - 2]
   const revenueDelta = ((latest.revenue - previous.revenue) / previous.revenue) * 100
 
   return (
@@ -33,8 +41,8 @@ export function AdminDashboard() {
         <StatCard label="Active repairs" value={String(activeRepairs)} trend={`${highPriorityRepairs} high priority`} icon={Wrench} />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-2">
-        <RevenueChart />
-        <CategoryChart />
+        <RevenueChart data={derivedSalesMetrics} />
+        <CategoryChart data={categoryMetrics} />
       </div>
       <div className="mt-6">
         <div className="mb-4 flex items-center gap-2">

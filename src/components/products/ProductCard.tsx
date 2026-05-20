@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Star } from 'lucide-react'
 import type { Product } from '../../types'
-import { getTotalAvailable } from '../../data/lookups'
+import { useAppData } from '../../context/AppDataContext'
 import { formatCurrency } from '../../utils/format'
 import { Badge } from '../common/Badge'
 
@@ -10,6 +10,8 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { getTotalAvailable } = useAppData()
+
   return (
     <article className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
       <Link to={`/products/${product.slug}`} className="block">

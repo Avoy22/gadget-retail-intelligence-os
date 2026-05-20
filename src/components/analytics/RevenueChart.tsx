@@ -1,12 +1,17 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { salesMetrics } from '../../data/mockData'
+import type { SalesMetric } from '../../types'
 
-export function RevenueChart() {
+type RevenueChartProps = {
+  data?: SalesMetric[]
+}
+
+export function RevenueChart({ data = salesMetrics }: RevenueChartProps) {
   return (
     <div className="h-80 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-lg font-bold text-slate-950">Revenue trend</h2>
       <ResponsiveContainer width="100%" height="85%">
-        <AreaChart data={salesMetrics}>
+        <AreaChart data={data}>
           <defs>
             <linearGradient id="revenue" x1="0" x2="0" y1="0" y2="1">
               <stop offset="5%" stopColor="#0891b2" stopOpacity={0.35} />
