@@ -196,12 +196,12 @@ export function ProductManagement() {
             ))}
           </div>,
           <div className="flex gap-2">
-            <button type="button" onClick={() => editProduct(product)} className="rounded-2xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+            <Button size="sm" variant="secondary" onClick={() => editProduct(product)} icon={<Edit3 size={14} />}>
               Edit
-            </button>
-            <button type="button" onClick={() => deleteProduct(product.id)} className="rounded-2xl border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-50">
+            </Button>
+            <Button size="sm" variant="danger" onClick={() => deleteProduct(product.id)}>
               Discontinue
-            </button>
+            </Button>
           </div>,
         ])}
       />

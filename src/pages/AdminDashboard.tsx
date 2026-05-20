@@ -48,11 +48,39 @@ export function AdminDashboard() {
         title="Retail operations overview"
         description="A board-level view of revenue, inventory risk, reservations, and active warranty service work."
       />
-      <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label={`${latest.month} revenue`} value={formatCurrency(latest.revenue)} trend={`+${revenueDelta.toFixed(1)}% MoM`} icon={CircleDollarSign} tone="cyan" />
-        <StatCard label="Network units" value={formatNumber(totalUnits)} trend={`${inventory.length} inventory signals`} icon={Boxes} tone="dark" />
-        <StatCard label="Reservations" value={String(reservations.length)} trend={`${readyReservations} ready for pickup`} icon={CalendarCheck} tone="emerald" />
-        <StatCard label="Active repairs" value={String(activeRepairs)} trend={`${highPriorityRepairs} high priority`} icon={Wrench} tone="amber" />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label={`${latest.month} revenue`}
+          value={formatCurrency(latest.revenue)}
+          trend={`${revenueDelta >= 0 ? '+' : ''}${revenueDelta.toFixed(1)}% MoM`}
+          trendDirection={revenueDelta >= 0 ? 'up' : 'down'}
+          icon={CircleDollarSign}
+          tone="cyan"
+        />
+        <StatCard
+          label="Network units"
+          value={formatNumber(totalUnits)}
+          trend={`${inventory.length} inventory signals`}
+          trendDirection="neutral"
+          icon={Boxes}
+          tone="dark"
+        />
+        <StatCard
+          label="Reservations"
+          value={String(reservations.length)}
+          trend={`${readyReservations} ready for pickup`}
+          trendDirection="up"
+          icon={CalendarCheck}
+          tone="emerald"
+        />
+        <StatCard
+          label="Active repairs"
+          value={String(activeRepairs)}
+          trend={`${highPriorityRepairs} high priority`}
+          trendDirection={highPriorityRepairs > 0 ? 'down' : 'neutral'}
+          icon={Wrench}
+          tone="amber"
+        />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-2">
         <RevenueChart data={derivedSalesMetrics} />

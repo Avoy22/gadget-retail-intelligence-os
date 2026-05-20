@@ -23,7 +23,7 @@ export function PublicLayout() {
             </span>
             <span>
               <span className="block text-base font-bold tracking-tight text-slate-950">Gadget Retail</span>
-              <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-cyan-700">Intelligence OS</span>
+              <span className="block text-xs font-semibold uppercase tracking-widest text-cyan-700">Intelligence OS</span>
             </span>
           </Link>
 

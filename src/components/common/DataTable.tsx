@@ -17,10 +17,10 @@ export function DataTable({ headers, rows, emptyTitle = 'No records found', empt
     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-          <thead className="sticky top-0 z-10 bg-slate-50/95 text-xs font-bold uppercase tracking-[0.08em] text-slate-500 backdrop-blur">
+          <thead className="bg-slate-50/95 text-xs font-bold uppercase tracking-widest text-slate-500 backdrop-blur">
             <tr>
               {headers.map((header) => (
-                <th key={header} className="whitespace-nowrap px-5 py-4">
+                <th key={header} className="whitespace-nowrap px-5 py-3.5 first:pl-6 last:pr-6">
                   {header}
                 </th>
               ))}
@@ -30,7 +30,7 @@ export function DataTable({ headers, rows, emptyTitle = 'No records found', empt
             {rows.map((row, rowIndex) => (
               <tr key={rowIndex} className="transition hover:bg-cyan-50/40">
                 {row.map((cell, cellIndex) => (
-                  <td key={cellIndex} className="whitespace-nowrap px-5 py-4 align-middle text-slate-700">
+                  <td key={cellIndex} className="whitespace-nowrap px-5 py-4 align-middle text-slate-700 first:pl-6 last:pr-6">
                     {cell}
                   </td>
                 ))}

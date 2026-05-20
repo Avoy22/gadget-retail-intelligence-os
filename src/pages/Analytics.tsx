@@ -20,11 +20,11 @@ export function Analytics() {
         title="Retail performance intelligence"
         description="Recharts-powered visuals for revenue, units, margin, and category growth using local mock data."
       />
-      <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Trailing revenue" value={formatCurrency(trailingRevenue)} trend="+18.2% YoY" icon={TrendingUp} />
-        <StatCard label="Units sold" value={formatNumber(trailingUnits)} trend="+11.7% YoY" icon={PackageCheck} />
-        <StatCard label="Avg margin" value={`${avgMargin.toFixed(1)}%`} trend="+2.1 pts" icon={Activity} />
-        <StatCard label="Members served" value="38.4k" trend="+9.8% YoY" icon={Users} />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Trailing revenue" value={formatCurrency(trailingRevenue)} trend="+18.2% YoY" trendDirection="up" icon={TrendingUp} tone="cyan" />
+        <StatCard label="Units sold" value={formatNumber(trailingUnits)} trend="+11.7% YoY" trendDirection="up" icon={PackageCheck} tone="emerald" />
+        <StatCard label="Avg margin" value={`${avgMargin.toFixed(1)}%`} trend="+2.1 pts" trendDirection="up" icon={Activity} tone="amber" />
+        <StatCard label="Members served" value="38.4k" trend="+9.8% YoY" trendDirection="up" icon={Users} tone="dark" />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-2">
         <RevenueChart data={derivedSalesMetrics} />
