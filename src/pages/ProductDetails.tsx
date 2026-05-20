@@ -35,7 +35,7 @@ export function ProductDetails() {
       </Link>
       <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
         <div className={`overflow-hidden rounded-lg bg-linear-to-br ${product.accent}`}>
-          <img src={product.image} alt={product.name} className="h-full min-h-[420px] w-full object-cover mix-blend-screen opacity-90" />
+          <img src={product.image} alt={product.name} className="h-full min-h-105 w-full object-cover mix-blend-screen opacity-90" />
         </div>
         <div>
           <div className="mb-4 flex flex-wrap gap-2">
