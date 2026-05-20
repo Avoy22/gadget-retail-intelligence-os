@@ -5,9 +5,13 @@ import { RevenueChart } from '../components/analytics/RevenueChart'
 import { PageHeader } from '../components/common/PageHeader'
 import { StatCard } from '../components/common/StatCard'
 import { categoryMetrics, salesMetrics } from '../data/mockData'
-import { formatCurrency } from '../utils/format'
+import { formatCurrency, formatNumber } from '../utils/format'
 
 export function Analytics() {
+  const trailingRevenue = salesMetrics.reduce((sum, entry) => sum + entry.revenue, 0)
+  const trailingUnits = salesMetrics.reduce((sum, entry) => sum + entry.units, 0)
+  const avgMargin = salesMetrics.reduce((sum, entry) => sum + entry.margin, 0) / salesMetrics.length
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <PageHeader
@@ -16,9 +20,9 @@ export function Analytics() {
         description="Recharts-powered visuals for revenue, units, margin, and category growth using local mock data."
       />
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Trailing revenue" value={formatCurrency(6995000)} trend="+18.2% YoY" icon={TrendingUp} />
-        <StatCard label="Units sold" value="9,145" trend="+11.7% YoY" icon={PackageCheck} />
-        <StatCard label="Avg margin" value="22.3%" trend="+2.1 pts" icon={Activity} />
+        <StatCard label="Trailing revenue" value={formatCurrency(trailingRevenue)} trend="+18.2% YoY" icon={TrendingUp} />
+        <StatCard label="Units sold" value={formatNumber(trailingUnits)} trend="+11.7% YoY" icon={PackageCheck} />
+        <StatCard label="Avg margin" value={`${avgMargin.toFixed(1)}%`} trend="+2.1 pts" icon={Activity} />
         <StatCard label="Members served" value="38.4k" trend="+9.8% YoY" icon={Users} />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-2">

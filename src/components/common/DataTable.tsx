@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react'
+
 type DataTableProps = {
   headers: string[]
-  rows: React.ReactNode[][]
+  rows: ReactNode[][]
 }
 
 export function DataTable({ headers, rows }: DataTableProps) {

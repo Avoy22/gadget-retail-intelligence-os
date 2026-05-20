@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react'
 import { cx } from '../../utils/format'
 
+export type BadgeTone = 'default' | 'success' | 'warning' | 'danger' | 'info'
+
 type BadgeProps = {
-  children: React.ReactNode
-  tone?: 'default' | 'success' | 'warning' | 'danger' | 'info'
+  children: ReactNode
+  tone?: BadgeTone
 }
 
 const tones = {

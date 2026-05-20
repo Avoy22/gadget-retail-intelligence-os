@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Gadget Retail Intelligence OS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A portfolio-ready frontend MVP for an electronics retail intelligence platform.
+Built with **React 19 + TypeScript + Vite + Tailwind v4 + Recharts**, fully
+frontend-only with local mock data — no backend, no auth, no database.
 
-Currently, two official plugins are available:
+## What it shows
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Public storefront** — hero landing, product catalog with search / category /
+  sort filters, product detail pages with store-wise availability, interactive
+  product comparison, and a customer-facing repair request form.
+- **Admin OS** — operations dashboard with revenue, inventory exception list,
+  reservations queue, repair queue, competitor pricing intelligence, and
+  product management table.
+- **Analytics** — Recharts visuals for revenue trend, category revenue, units /
+  margin curves, and growth leaders, all derived from the same mock dataset.
 
-## React Compiler
+## Tech notes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Routing via `react-router-dom` with separate `PublicLayout` and `AdminLayout`
+  shells under `/` and `/admin`.
+- All numbers in stat cards, charts, and tables are derived from a single
+  `src/data/mockData.ts` — no duplicated magic constants.
+- Shared primitives live in `src/components/common` (`Badge`, `DataTable`,
+  `PageHeader`, `StatCard`, `EmptyState`).
+- Typed end to end via `src/types/index.ts`.
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev      # start the Vite dev server
+npm run build    # type-check + production build
+npm run preview  # preview the production build
+npm run lint     # run ESLint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+  components/
+    analytics/   # Recharts wrappers
+    common/      # Badge, DataTable, PageHeader, StatCard, EmptyState
+    layout/      # PublicLayout, AdminLayout
+    products/    # ProductCard, AvailabilityTable
+  data/          # mockData.ts + lookups.ts
+  pages/         # route components (public + admin + 404)
+  routes/        # AppRoutes
+  types/         # shared TypeScript types
+  utils/         # format helpers + cx
+```
+
+## Deployment
+
+The app is a standard Vite static build — `npm run build` produces a `dist/`
+folder that can be deployed to Vercel, Netlify, Cloudflare Pages, or any
+static host with SPA fallback to `index.html`.

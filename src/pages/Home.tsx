@@ -5,12 +5,24 @@ import { RevenueChart } from '../components/analytics/RevenueChart'
 import { Badge } from '../components/common/Badge'
 import { StatCard } from '../components/common/StatCard'
 import { ProductCard } from '../components/products/ProductCard'
-import { products, stores } from '../data/mockData'
+import { inventory, products, salesMetrics, stores } from '../data/mockData'
 import { formatCurrency, formatNumber } from '../utils/format'
+
+const HERO_CATEGORIES = ['Smartphones', 'Laptops', 'Audio'] as const
 
 export function Home() {
   const featured = products.slice(0, 3)
-  const revenue = 1330000
+  const latest = salesMetrics[salesMetrics.length - 1]
+  const previous = salesMetrics[salesMetrics.length - 2]
+  const revenueDelta = ((latest.revenue - previous.revenue) / previous.revenue) * 100
+  const totalUnits = inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
+  const heroAvailability = HERO_CATEGORIES.map((category) => {
+    const ids = new Set(products.filter((product) => product.category === category).map((product) => product.id))
+    const units = inventory
+      .filter((item) => ids.has(item.productId))
+      .reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
+    return { category, units }
+  })
 
   return (
     <div>
@@ -21,9 +33,9 @@ export function Home() {
             alt="Premium electronics retail floor"
             className="h-full w-full object-cover opacity-35"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-slate-950/20" />
+          <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/85 to-slate-950/20" />
         </div>
-        <div className="relative mx-auto grid min-h-[680px] max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+        <div className="relative mx-auto grid min-h-170 max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
           <div>
             <Badge tone="info">Frontend-only retail intelligence platform</Badge>
             <h1 className="mt-6 max-w-4xl text-5xl font-bold leading-tight md:text-7xl">Gadget Retail Intelligence OS</h1>
@@ -44,9 +56,9 @@ export function Home() {
           <div className="rounded-lg border border-white/15 bg-white/10 p-5 shadow-2xl backdrop-blur">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-lg bg-white p-5 text-slate-950">
-                <p className="text-sm font-semibold text-slate-500">May revenue</p>
-                <p className="mt-2 text-3xl font-bold">{formatCurrency(revenue)}</p>
-                <p className="mt-2 text-sm font-semibold text-emerald-700">+14.6% vs last month</p>
+                <p className="text-sm font-semibold text-slate-500">{latest.month} revenue</p>
+                <p className="mt-2 text-3xl font-bold">{formatCurrency(latest.revenue)}</p>
+                <p className="mt-2 text-sm font-semibold text-emerald-700">+{revenueDelta.toFixed(1)}% vs last month</p>
               </div>
               <div className="rounded-lg bg-cyan-500 p-5 text-slate-950">
                 <p className="text-sm font-semibold">Active stores</p>
@@ -56,10 +68,10 @@ export function Home() {
               <div className="rounded-lg bg-slate-900 p-5 text-white sm:col-span-2">
                 <p className="text-sm font-semibold text-slate-300">Network availability</p>
                 <div className="mt-4 grid grid-cols-3 gap-3">
-                  {['Smartphones', 'Laptops', 'Audio'].map((category) => (
-                    <div key={category} className="rounded-lg bg-white/10 p-3">
-                      <p className="text-xs text-slate-300">{category}</p>
-                      <p className="mt-1 text-xl font-bold">{formatNumber(180 + category.length * 19)}</p>
+                  {heroAvailability.map((entry) => (
+                    <div key={entry.category} className="rounded-lg bg-white/10 p-3">
+                      <p className="text-xs text-slate-300">{entry.category}</p>
+                      <p className="mt-1 text-xl font-bold">{formatNumber(entry.units)}</p>
                     </div>
                   ))}
                 </div>
@@ -73,7 +85,7 @@ export function Home() {
         <div className="grid gap-4 md:grid-cols-4">
           <StatCard label="Products modeled" value={String(products.length)} trend="+8 categories" icon={Sparkles} />
           <StatCard label="Retail locations" value={String(stores.length)} trend="Global footprint" icon={Store} />
-          <StatCard label="Inventory signals" value="65" trend="Store-level stock" icon={Boxes} />
+          <StatCard label="Units in network" value={formatNumber(totalUnits)} trend="Store-level stock" icon={Boxes} />
           <StatCard label="Service workflows" value="4" trend="Warranty requests" icon={ShieldCheck} />
         </div>
       </section>
