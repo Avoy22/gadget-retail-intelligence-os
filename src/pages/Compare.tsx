@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Check, Minus, X } from 'lucide-react'
 import { PageHeader } from '../components/common/PageHeader'
-import { products } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 import type { Product } from '../types'
 import { formatCurrency } from '../utils/format'
 
@@ -9,12 +9,13 @@ const SPEC_ROWS = ['Display', 'Storage', 'Camera', 'Chip', 'Memory', 'Battery', 
 const MAX_SLOTS = 4
 const DEFAULT_SLUGS = ['iphone-16-pro', 'galaxy-s25-ultra', 'pixel-10-pro', 'macbook-pro-14-m4']
 
-const findBySlug = (slug: string): Product | undefined => products.find((product) => product.slug === slug)
-
 export function Compare() {
+  const { activeProducts } = useAppData()
   const [slugs, setSlugs] = useState<string[]>(DEFAULT_SLUGS)
 
-  const selected = slugs.map(findBySlug).filter((product): product is Product => Boolean(product))
+  const selected = slugs
+    .map((slug) => activeProducts.find((product) => product.slug === slug))
+    .filter((product): product is Product => Boolean(product))
 
   const updateSlot = (index: number, slug: string) => {
     setSlugs((prev) => {
@@ -31,7 +32,7 @@ export function Compare() {
 
   const addSlot = () => {
     if (slugs.length >= MAX_SLOTS) return
-    const unused = products.find((product) => !slugs.includes(product.slug))
+    const unused = activeProducts.find((product) => !slugs.includes(product.slug))
     if (unused) setSlugs((prev) => [...prev, unused.slug])
   }
 
@@ -79,7 +80,7 @@ export function Compare() {
                       onChange={(event) => updateSlot(index, event.target.value)}
                       className="mb-2 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm font-semibold text-slate-950 outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
                     >
-                      {products.map((candidate) => (
+                      {activeProducts.map((candidate) => (
                         <option key={candidate.id} value={candidate.slug} disabled={candidate.slug !== product.slug && slugs.includes(candidate.slug)}>
                           {candidate.name}
                         </option>

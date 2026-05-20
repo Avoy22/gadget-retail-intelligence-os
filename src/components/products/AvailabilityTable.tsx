@@ -1,4 +1,4 @@
-import { getStore } from '../../data/lookups'
+import { useAppData } from '../../context/AppDataContext'
 import type { InventoryItem } from '../../types'
 import { getStockStatus } from '../../utils/format'
 import { Badge } from '../common/Badge'
@@ -9,6 +9,8 @@ type AvailabilityTableProps = {
 }
 
 export function AvailabilityTable({ items }: AvailabilityTableProps) {
+  const { getStore } = useAppData()
+
   return (
     <DataTable
       headers={['Store', 'Region', 'Available', 'Reserved', 'Status', 'Updated']}

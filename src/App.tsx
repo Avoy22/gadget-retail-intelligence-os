@@ -1,7 +1,12 @@
+import { AppDataProvider } from './context/AppDataContext'
 import { AppRoutes } from './routes/AppRoutes'
 
 function App() {
-  return <AppRoutes />
+  return (
+    <AppDataProvider>
+      <AppRoutes />
+    </AppDataProvider>
+  )
 }
 
 export default App

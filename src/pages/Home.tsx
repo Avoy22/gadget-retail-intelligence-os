@@ -5,19 +5,20 @@ import { RevenueChart } from '../components/analytics/RevenueChart'
 import { Badge } from '../components/common/Badge'
 import { StatCard } from '../components/common/StatCard'
 import { ProductCard } from '../components/products/ProductCard'
-import { inventory, products, salesMetrics, stores } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 import { formatCurrency, formatNumber } from '../utils/format'
 
 const HERO_CATEGORIES = ['Smartphones', 'Laptops', 'Audio'] as const
 
 export function Home() {
-  const featured = products.slice(0, 3)
-  const latest = salesMetrics[salesMetrics.length - 1]
-  const previous = salesMetrics[salesMetrics.length - 2]
+  const { activeProducts, categoryMetrics, derivedSalesMetrics, inventory, stores } = useAppData()
+  const featured = activeProducts.slice(0, 3)
+  const latest = derivedSalesMetrics[derivedSalesMetrics.length - 1]
+  const previous = derivedSalesMetrics[derivedSalesMetrics.length - 2]
   const revenueDelta = ((latest.revenue - previous.revenue) / previous.revenue) * 100
   const totalUnits = inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
   const heroAvailability = HERO_CATEGORIES.map((category) => {
-    const ids = new Set(products.filter((product) => product.category === category).map((product) => product.id))
+    const ids = new Set(activeProducts.filter((product) => product.category === category).map((product) => product.id))
     const units = inventory
       .filter((item) => ids.has(item.productId))
       .reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
@@ -83,7 +84,7 @@ export function Home() {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-4 md:grid-cols-4">
-          <StatCard label="Products modeled" value={String(products.length)} trend="+8 categories" icon={Sparkles} />
+          <StatCard label="Products modeled" value={String(activeProducts.length)} trend="+8 categories" icon={Sparkles} />
           <StatCard label="Retail locations" value={String(stores.length)} trend="Global footprint" icon={Store} />
           <StatCard label="Units in network" value={formatNumber(totalUnits)} trend="Store-level stock" icon={Boxes} />
           <StatCard label="Service workflows" value="4" trend="Warranty requests" icon={ShieldCheck} />
@@ -111,8 +112,8 @@ export function Home() {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-5 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <RevenueChart />
-        <CategoryChart />
+        <RevenueChart data={derivedSalesMetrics} />
+        <CategoryChart data={categoryMetrics} />
       </section>
 
       <section className="bg-slate-950 py-12 text-white">

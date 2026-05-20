@@ -1,21 +1,31 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2, ShieldCheck, Star, Truck } from 'lucide-react'
 import { AvailabilityTable } from '../components/products/AvailabilityTable'
 import { Badge } from '../components/common/Badge'
 import { PageHeader } from '../components/common/PageHeader'
-import { getInventoryForProduct, getProductBySlug, getTotalAvailable } from '../data/lookups'
-import { products } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
 import { formatCurrency } from '../utils/format'
 import { NotFound } from './NotFound'
 
 export function ProductDetails() {
   const { slug } = useParams()
+  const { activeProducts, createReservation, getInventoryForProduct, getProductBySlug, getTotalAvailable, stores } = useAppData()
+  const [reservation, setReservation] = useState({ customer: '', email: '', phone: '', storeId: stores[0]?.id ?? '' })
+  const [reserved, setReserved] = useState(false)
   const product = getProductBySlug(slug)
 
-  if (!product) return <NotFound />
+  if (!product || product.status !== 'active') return <NotFound />
 
   const availability = getInventoryForProduct(product.id)
-  const related = products.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 3)
+  const related = activeProducts.filter((item) => item.category === product.category && item.id !== product.id).slice(0, 3)
+  const submitReservation = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    createReservation({ ...reservation, productId: product.id })
+    setReservation({ customer: '', email: '', phone: '', storeId: stores[0]?.id ?? '' })
+    setReserved(true)
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -69,6 +79,26 @@ export function ProductDetails() {
               ))}
             </div>
           </div>
+          <form onSubmit={submitReservation} className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-950">Reserve for pickup</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <input required value={reservation.customer} onChange={(event) => setReservation((current) => ({ ...current, customer: event.target.value }))} placeholder="Full name" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
+              <input required type="email" value={reservation.email} onChange={(event) => setReservation((current) => ({ ...current, email: event.target.value }))} placeholder="Email" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
+              <input value={reservation.phone} onChange={(event) => setReservation((current) => ({ ...current, phone: event.target.value }))} placeholder="Phone" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
+              <select value={reservation.storeId} onChange={(event) => setReservation((current) => ({ ...current, storeId: event.target.value }))} className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100">
+                {stores.map((store) => (
+                  <option key={store.id} value={store.id}>
+                    {store.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-700 px-5 py-3 font-semibold text-white hover:bg-cyan-800">
+              Reserve product
+              <CheckCircle2 size={17} />
+            </button>
+            {reserved ? <p className="mt-3 text-sm font-semibold text-emerald-700">Reservation saved for admin pickup workflow.</p> : null}
+          </form>
         </div>
       </div>
       <div className="mt-10">

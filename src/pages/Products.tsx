@@ -3,16 +3,18 @@ import { Filter, Search } from 'lucide-react'
 import { EmptyState } from '../components/common/EmptyState'
 import { PageHeader } from '../components/common/PageHeader'
 import { ProductCard } from '../components/products/ProductCard'
-import { categories, products } from '../data/mockData'
+import { useAppData } from '../context/AppDataContext'
+import { categories } from '../data/mockData'
 import type { ProductCategory } from '../types'
 
 export function Products() {
+  const { activeProducts } = useAppData()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<ProductCategory | 'All'>('All')
   const [sort, setSort] = useState('featured')
 
   const filtered = useMemo(() => {
-    const result = products.filter((product) => {
+    const result = activeProducts.filter((product) => {
       const matchesQuery = `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(query.toLowerCase())
       const matchesCategory = category === 'All' || product.category === category
       return matchesQuery && matchesCategory
@@ -24,7 +26,7 @@ export function Products() {
       if (sort === 'rating') return b.rating - a.rating
       return b.reviews - a.reviews
     })
-  }, [category, query, sort])
+  }, [activeProducts, category, query, sort])
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
