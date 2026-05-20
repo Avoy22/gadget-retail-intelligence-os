@@ -85,6 +85,11 @@ export function ProductManagement() {
     setForm(blankForm)
   }
 
+  const toPositiveNumber = (value: string) => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0
+  }
+
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const payload = {
@@ -93,16 +98,17 @@ export function ProductManagement() {
       category: form.category,
       status: form.status,
       description: form.description.trim(),
-      price: Number(form.price),
-      msrp: Number(form.msrp),
+      price: toPositiveNumber(form.price),
+      msrp: toPositiveNumber(form.msrp),
       image: form.image.trim() || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80',
-      warrantyMonths: Number(form.warrantyMonths),
+      warrantyMonths: toPositiveNumber(form.warrantyMonths),
       tags: form.tags
         .split(',')
         .map((tag) => tag.trim())
         .filter(Boolean),
     }
 
+    if (!payload.name || !payload.brand || !payload.description) return
     if (editingId) updateProduct(editingId, payload)
     else addProduct(payload)
     reset()

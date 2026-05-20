@@ -11,5 +11,11 @@ export function loadFromStorage<T>(key: string): T | null {
 
 export function saveToStorage<T>(key: string, value: T) {
   if (typeof window === 'undefined') return
-  window.localStorage.setItem(key, JSON.stringify(value))
+
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Storage may be full or disabled (private mode). Fail silently so
+    // the in-memory state continues to work for the current session.
+  }
 }

@@ -105,11 +105,12 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
         }))
       },
       updateInventoryQuantity: (inventoryItemId, stock) => {
+        const safeStock = Number.isFinite(stock) ? Math.max(0, Math.floor(stock)) : 0
         setState((current) => ({
           ...current,
           inventory: current.inventory.map((item) =>
             item.id === inventoryItemId
-              ? { ...item, stock: Math.max(0, stock), updatedAt: new Date().toISOString().slice(0, 10) }
+              ? { ...item, stock: safeStock, updatedAt: new Date().toISOString().slice(0, 10) }
               : item,
           ),
         }))
@@ -155,10 +156,18 @@ export function AppDataProvider({ children }: AppDataProviderProps) {
         }))
       },
       updateCompetitorPrice: (priceId, updates) => {
+        const sanitized: Partial<CompetitorPrice> = {
+          ...updates,
+          ...(typeof updates.price === 'number'
+            ? { price: Number.isFinite(updates.price) ? Math.max(0, updates.price) : 0 }
+            : {}),
+        }
         setState((current) => ({
           ...current,
           competitorPrices: current.competitorPrices.map((price) =>
-            price.id === priceId ? { ...price, ...updates, checkedAt: new Date().toISOString().slice(0, 10) } : price,
+            price.id === priceId
+              ? { ...price, ...sanitized, checkedAt: new Date().toISOString().slice(0, 10) }
+              : price,
           ),
         }))
       },

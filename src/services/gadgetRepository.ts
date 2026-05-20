@@ -1,4 +1,5 @@
 import {
+  categoryMetrics as baselineCategoryMetrics,
   competitorPrices,
   inventory,
   products,
@@ -111,14 +112,26 @@ const buildInitialState = (): GadgetDataState => ({
 })
 
 export function loadGadgetState(): GadgetDataState {
-  const stored = loadFromStorage<GadgetDataState>(STORAGE_KEY)
-  if (!stored || stored.schemaVersion !== SCHEMA_VERSION) return buildInitialState()
+  try {
+    const stored = loadFromStorage<Partial<GadgetDataState>>(STORAGE_KEY)
+    if (!stored || stored.schemaVersion !== SCHEMA_VERSION) return buildInitialState()
 
-  return {
-    ...buildInitialState(),
-    ...stored,
-    products: stored.products.map(normalizeProduct),
-    repairRequests: stored.repairRequests.map(normalizeRepair),
+    const fallback = buildInitialState()
+    return {
+      ...fallback,
+      ...stored,
+      products: (stored.products ?? fallback.products).map(normalizeProduct),
+      stores: stored.stores ?? fallback.stores,
+      inventory: stored.inventory ?? fallback.inventory,
+      reservations: stored.reservations ?? fallback.reservations,
+      repairRequests: (stored.repairRequests ?? fallback.repairRequests).map(normalizeRepair),
+      competitorPrices: stored.competitorPrices ?? fallback.competitorPrices,
+      customers: stored.customers ?? fallback.customers,
+      orders: stored.orders ?? fallback.orders,
+      salesMetrics: stored.salesMetrics ?? fallback.salesMetrics,
+    }
+  } catch {
+    return buildInitialState()
   }
 }
 
@@ -191,6 +204,9 @@ export function deriveCategoryMetrics(state: GadgetDataState): CategoryMetric[] 
     totals.set(product.category, (totals.get(product.category) ?? 0) + available * product.price)
   })
 
+  const hasSignal = Array.from(totals.values()).some((value) => value > 0)
+  if (!hasSignal) return baselineCategoryMetrics.map((metric) => ({ ...metric }))
+
   return Array.from(totals.entries()).map(([category, revenue], index) => ({
     category,
     revenue,
@@ -199,18 +215,24 @@ export function deriveCategoryMetrics(state: GadgetDataState): CategoryMetric[] 
 }
 
 export function deriveSalesMetrics(state: GadgetDataState): SalesMetric[] {
+  const availableUnits = state.inventory.reduce(
+    (sum, item) => sum + Math.max(0, item.stock - item.reserved),
+    0,
+  )
   const inventoryValue = state.inventory.reduce((sum, item) => {
     const product = state.products.find((entry) => entry.id === item.productId)
     return sum + Math.max(0, item.stock - item.reserved) * (product?.price ?? 0)
   }, 0)
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
 
+  if (inventoryValue === 0) return state.salesMetrics.map((metric) => ({ ...metric }))
+
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
   return months.map((month, index) => {
     const factor = 0.72 + index * 0.07
     return {
       month,
       revenue: Math.round(inventoryValue * factor),
-      units: Math.round(state.inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0) * factor),
+      units: Math.round(availableUnits * factor),
       margin: 18 + index + Math.min(4, state.competitorPrices.length),
     }
   })

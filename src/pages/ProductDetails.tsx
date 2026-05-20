@@ -34,7 +34,7 @@ export function ProductDetails() {
         Back to catalog
       </Link>
       <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-        <div className={`overflow-hidden rounded-lg bg-gradient-to-br ${product.accent}`}>
+        <div className={`overflow-hidden rounded-lg bg-linear-to-br ${product.accent}`}>
           <img src={product.image} alt={product.name} className="h-full min-h-[420px] w-full object-cover mix-blend-screen opacity-90" />
         </div>
         <div>

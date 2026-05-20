@@ -15,7 +15,10 @@ export function Home() {
   const featured = activeProducts.slice(0, 3)
   const latest = derivedSalesMetrics[derivedSalesMetrics.length - 1]
   const previous = derivedSalesMetrics[derivedSalesMetrics.length - 2]
-  const revenueDelta = ((latest.revenue - previous.revenue) / previous.revenue) * 100
+  const revenueDelta =
+    previous && previous.revenue > 0
+      ? ((latest.revenue - previous.revenue) / previous.revenue) * 100
+      : 0
   const totalUnits = inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
   const heroAvailability = HERO_CATEGORIES.map((category) => {
     const ids = new Set(activeProducts.filter((product) => product.category === category).map((product) => product.id))
