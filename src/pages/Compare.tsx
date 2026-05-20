@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check, Minus, X } from 'lucide-react'
 import { PageHeader } from '../components/common/PageHeader'
 import { useAppData } from '../context/AppDataContext'
@@ -12,6 +12,20 @@ const DEFAULT_SLUGS = ['iphone-16-pro', 'galaxy-s25-ultra', 'pixel-10-pro', 'mac
 export function Compare() {
   const { activeProducts } = useAppData()
   const [slugs, setSlugs] = useState<string[]>(DEFAULT_SLUGS)
+
+  useEffect(() => {
+    setSlugs((prev) => {
+      const valid = prev.filter((slug) => activeProducts.some((product) => product.slug === slug))
+      if (valid.length >= 2) {
+        return valid.length === prev.length ? prev : valid
+      }
+      const filler = activeProducts
+        .filter((product) => !valid.includes(product.slug))
+        .slice(0, Math.max(0, 2 - valid.length))
+        .map((product) => product.slug)
+      return [...valid, ...filler]
+    })
+  }, [activeProducts])
 
   const selected = slugs
     .map((slug) => activeProducts.find((product) => product.slug === slug))

@@ -3,6 +3,7 @@ import { CategoryChart } from '../components/analytics/CategoryChart'
 import { RevenueChart } from '../components/analytics/RevenueChart'
 import { Badge } from '../components/common/Badge'
 import { DataTable } from '../components/common/DataTable'
+import { EmptyState } from '../components/common/EmptyState'
 import { PageHeader } from '../components/common/PageHeader'
 import { StatCard } from '../components/common/StatCard'
 import { useAppData } from '../context/AppDataContext'
@@ -25,7 +26,10 @@ export function AdminDashboard() {
   const totalUnits = inventory.reduce((sum, item) => sum + Math.max(0, item.stock - item.reserved), 0)
   const latest = derivedSalesMetrics[derivedSalesMetrics.length - 1]
   const previous = derivedSalesMetrics[derivedSalesMetrics.length - 2]
-  const revenueDelta = ((latest.revenue - previous.revenue) / previous.revenue) * 100
+  const revenueDelta =
+    previous && previous.revenue > 0
+      ? ((latest.revenue - previous.revenue) / previous.revenue) * 100
+      : 0
 
   return (
     <div>
@@ -49,22 +53,29 @@ export function AdminDashboard() {
           <AlertTriangle className="text-amber-600" size={20} />
           <h2 className="text-xl font-bold text-slate-950">Inventory exceptions</h2>
         </div>
-        <DataTable
-          headers={['Product', 'Store', 'Available', 'Reserved', 'Status', 'Updated']}
-          rows={lowStock.map((item) => {
-            const product = getProduct(item.productId)
-            const store = getStore(item.storeId)
-            const status = getStockStatus(item)
-            return [
-              <span className="font-semibold text-slate-950">{product?.name}</span>,
-              store?.name,
-              Math.max(0, item.stock - item.reserved),
-              item.reserved,
-              <Badge tone={status.tone}>{status.label}</Badge>,
-              item.updatedAt,
-            ]
-          })}
-        />
+        {lowStock.length ? (
+          <DataTable
+            headers={['Product', 'Store', 'Available', 'Reserved', 'Status', 'Updated']}
+            rows={lowStock.map((item) => {
+              const product = getProduct(item.productId)
+              const store = getStore(item.storeId)
+              const status = getStockStatus(item)
+              return [
+                <span className="font-semibold text-slate-950">{product?.name}</span>,
+                store?.name,
+                Math.max(0, item.stock - item.reserved),
+                item.reserved,
+                <Badge tone={status.tone}>{status.label}</Badge>,
+                item.updatedAt,
+              ]
+            })}
+          />
+        ) : (
+          <EmptyState
+            title="No exceptions"
+            description="Every store is at or above its reorder point. Adjust stock from the Inventory tab to test alerts."
+          />
+        )}
       </div>
     </div>
   )

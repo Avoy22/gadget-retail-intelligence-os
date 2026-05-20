@@ -15,7 +15,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
       <Link to={`/products/${product.slug}`} className="block">
-        <div className={`relative h-56 bg-gradient-to-br ${product.accent}`}>
+        <div className={`relative h-56 bg-linear-to-br ${product.accent}`}>
           <img src={product.image} alt={product.name} className="h-full w-full object-cover mix-blend-screen opacity-85" />
           <div className="absolute left-4 top-4">
             <Badge tone="info">{product.category}</Badge>
