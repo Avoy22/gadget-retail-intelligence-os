@@ -1,6 +1,7 @@
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import { Badge } from '../components/common/Badge'
 import { DataTable } from '../components/common/DataTable'
+import { Input, Select } from '../components/common/FormControls'
 import { PageHeader } from '../components/common/PageHeader'
 import { useAppData } from '../context/AppDataContext'
 import type { CompetitorPrice } from '../types'
@@ -25,6 +26,8 @@ export function CompetitorPrices() {
         description="Track and update competitor price records against internal retail pricing."
       />
       <DataTable
+        emptyTitle="No competitor prices"
+        emptyDescription="Add competitor records in mock data to track price gaps."
         headers={['Product', 'Our price', 'Competitor', 'Competitor price', 'Delta', 'Availability', 'Checked']}
         rows={competitorPrices.map((item) => {
           const product = getProduct(item.productId)
@@ -33,17 +36,17 @@ export function CompetitorPrices() {
           return [
             <span className="font-semibold text-slate-950">{product?.name}</span>,
             formatCurrency(product?.price ?? 0),
-            <input
+            <Input
               value={item.competitor}
               onChange={(event) => updateCompetitorPrice(item.id, { competitor: event.target.value })}
-              className="h-9 w-36 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+              className="h-9 w-36"
             />,
-            <input
+            <Input
               type="number"
               min="0"
               value={item.price}
               onChange={(event) => updateCompetitorPrice(item.id, { price: Number(event.target.value) })}
-              className="h-9 w-28 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+              className="h-9 w-28"
             />,
             <span className={delta < 0 ? 'inline-flex items-center gap-1 font-semibold text-rose-700' : 'inline-flex items-center gap-1 font-semibold text-emerald-700'}>
               <Icon size={16} />
@@ -51,17 +54,17 @@ export function CompetitorPrices() {
             </span>,
             <div className="flex items-center gap-2">
               <Badge tone={availabilityTone(item.availability)}>{item.availability}</Badge>
-              <select
+              <Select
                 value={item.availability}
                 onChange={(event) => updateCompetitorPrice(item.id, { availability: event.target.value as CompetitorPrice['availability'] })}
-                className="h-9 rounded-lg border border-slate-200 px-2 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+                className="h-9"
               >
                 {availabilityOptions.map((availability) => (
                   <option key={availability} value={availability}>
                     {availability}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>,
             item.checkedAt,
           ]

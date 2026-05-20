@@ -31,11 +31,11 @@ export function Analytics() {
         <CategoryChart data={categoryMetrics} />
       </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="h-80 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="h-80 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-950/5">
           <h2 className="mb-4 text-lg font-bold text-slate-950">Units and margin</h2>
           <ResponsiveContainer width="100%" height="85%">
             <LineChart data={derivedSalesMetrics}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
               <XAxis dataKey="month" stroke="#64748b" />
               <YAxis stroke="#64748b" />
               <Tooltip />
@@ -44,14 +44,14 @@ export function Analytics() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-950/5">
           <h2 className="text-lg font-bold text-slate-950">Growth leaders</h2>
           <div className="mt-4 grid gap-3">
             {[...categoryMetrics]
               .sort((a, b) => b.growth - a.growth)
               .slice(0, 5)
               .map((item) => (
-                <div key={item.category} className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3">
+                <div key={item.category} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
                   <span className="font-semibold text-slate-700">{item.category}</span>
                   <span className="font-bold text-emerald-700">+{item.growth}%</span>
                 </div>

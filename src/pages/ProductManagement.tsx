@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Edit3, Plus, Search } from 'lucide-react'
+import { Edit3, Plus } from 'lucide-react'
 import { Badge } from '../components/common/Badge'
+import { Button } from '../components/common/Button'
+import { Card, CardHeader } from '../components/common/Card'
 import { DataTable } from '../components/common/DataTable'
+import { Input, Select, Textarea } from '../components/common/FormControls'
 import { PageHeader } from '../components/common/PageHeader'
+import { SearchInput } from '../components/common/SearchInput'
 import { useAppData } from '../context/AppDataContext'
 import { categories } from '../data/mockData'
 import type { Product, ProductCategory, ProductStatus } from '../types'
@@ -122,60 +126,56 @@ export function ProductManagement() {
         description="Create, edit, publish, draft, and discontinue products with localStorage persistence."
       />
 
-      <form onSubmit={submit} className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-slate-950">{editingId ? 'Edit product' : 'Add product'}</h2>
-            <p className="text-sm text-slate-500">Changes save to this browser immediately.</p>
+      <form onSubmit={submit} className="mb-6">
+        <Card>
+          <CardHeader
+            title={editingId ? 'Edit product' : 'Add product'}
+            description="Changes save to this browser immediately through the existing localStorage workflow."
+            action={editingId ? <Button onClick={reset} variant="secondary">Cancel</Button> : null}
+          />
+          <div className="grid gap-4 p-5 md:grid-cols-4">
+            <Input label="Product name" value={form.name} onChange={(event) => setField('name', event.target.value)} required placeholder="Product name" />
+            <Input label="Brand" value={form.brand} onChange={(event) => setField('brand', event.target.value)} required placeholder="Brand" />
+            <Select label="Category" value={form.category} onChange={(event) => setField('category', event.target.value as ProductCategory)}>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Select>
+            <Select label="Status" value={form.status} onChange={(event) => setField('status', event.target.value as ProductStatus)}>
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="discontinued">Discontinued</option>
+            </Select>
+            <Input label="Price" value={form.price} onChange={(event) => setField('price', event.target.value)} required type="number" min="0" placeholder="Price" />
+            <Input label="MSRP" value={form.msrp} onChange={(event) => setField('msrp', event.target.value)} required type="number" min="0" placeholder="MSRP" />
+            <Input label="Warranty" value={form.warrantyMonths} onChange={(event) => setField('warrantyMonths', event.target.value)} required type="number" min="0" placeholder="Months" />
+            <Input label="Tags" value={form.tags} onChange={(event) => setField('tags', event.target.value)} placeholder="Comma separated" />
+            <Input label="Image URL" value={form.image} onChange={(event) => setField('image', event.target.value)} placeholder="Image URL" fieldClassName="md:col-span-2" />
+            <Textarea label="Description" value={form.description} onChange={(event) => setField('description', event.target.value)} required placeholder="Describe the retail value proposition" fieldClassName="md:col-span-2" />
           </div>
-          {editingId ? (
-            <button type="button" onClick={reset} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-              Cancel
-            </button>
-          ) : null}
-        </div>
-        <div className="grid gap-3 md:grid-cols-4">
-          <input value={form.name} onChange={(event) => setField('name', event.target.value)} required placeholder="Product name" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <input value={form.brand} onChange={(event) => setField('brand', event.target.value)} required placeholder="Brand" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <select value={form.category} onChange={(event) => setField('category', event.target.value as ProductCategory)} className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100">
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <select value={form.status} onChange={(event) => setField('status', event.target.value as ProductStatus)} className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100">
-            <option value="active">Active</option>
-            <option value="draft">Draft</option>
-            <option value="discontinued">Discontinued</option>
-          </select>
-          <input value={form.price} onChange={(event) => setField('price', event.target.value)} required type="number" min="0" placeholder="Price" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <input value={form.msrp} onChange={(event) => setField('msrp', event.target.value)} required type="number" min="0" placeholder="MSRP" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <input value={form.warrantyMonths} onChange={(event) => setField('warrantyMonths', event.target.value)} required type="number" min="0" placeholder="Warranty months" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <input value={form.tags} onChange={(event) => setField('tags', event.target.value)} placeholder="Tags, comma separated" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-          <input value={form.image} onChange={(event) => setField('image', event.target.value)} placeholder="Image URL" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100 md:col-span-2" />
-          <input value={form.description} onChange={(event) => setField('description', event.target.value)} required placeholder="Description" className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100 md:col-span-2" />
-        </div>
-        <button type="submit" className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cyan-700 px-5 py-3 text-sm font-semibold text-white hover:bg-cyan-800">
-          {editingId ? <Edit3 size={17} /> : <Plus size={17} />}
-          {editingId ? 'Save changes' : 'Add product'}
-        </button>
+          <div className="border-t border-slate-100 px-5 py-4">
+            <Button type="submit" icon={editingId ? <Edit3 size={17} /> : <Plus size={17} />}>
+              {editingId ? 'Save changes' : 'Add product'}
+            </Button>
+          </div>
+        </Card>
       </form>
 
-      <div className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_220px]">
-        <label className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, brands, categories" className="h-11 w-full rounded-lg border border-slate-200 pl-10 pr-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100" />
-        </label>
-        <select value={status} onChange={(event) => setStatus(event.target.value as ProductStatus | 'all')} className="h-11 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100">
+      <Card className="mb-4 grid gap-3 p-4 md:grid-cols-[1fr_220px]">
+        <SearchInput value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, brands, categories" />
+        <Select value={status} onChange={(event) => setStatus(event.target.value as ProductStatus | 'all')}>
           <option value="all">All statuses</option>
           <option value="active">Active</option>
           <option value="draft">Draft</option>
           <option value="discontinued">Discontinued</option>
-        </select>
-      </div>
+        </Select>
+      </Card>
 
       <DataTable
+        emptyTitle="No products match"
+        emptyDescription="Adjust the search or status filter to find products."
         headers={['Product', 'Status', 'Category', 'Price', 'MSRP', 'Warranty', 'Retail tags', 'Actions']}
         rows={filtered.map((product) => [
           <div className="flex items-center gap-3">
@@ -196,10 +196,10 @@ export function ProductManagement() {
             ))}
           </div>,
           <div className="flex gap-2">
-            <button type="button" onClick={() => editProduct(product)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+            <button type="button" onClick={() => editProduct(product)} className="rounded-2xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
               Edit
             </button>
-            <button type="button" onClick={() => deleteProduct(product.id)} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50">
+            <button type="button" onClick={() => deleteProduct(product.id)} className="rounded-2xl border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-50">
               Discontinue
             </button>
           </div>,

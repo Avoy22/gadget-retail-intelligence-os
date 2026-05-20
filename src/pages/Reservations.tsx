@@ -1,5 +1,6 @@
 import { Badge } from '../components/common/Badge'
 import { DataTable } from '../components/common/DataTable'
+import { Select } from '../components/common/FormControls'
 import { PageHeader } from '../components/common/PageHeader'
 import { useAppData } from '../context/AppDataContext'
 import type { Reservation } from '../types'
@@ -23,6 +24,8 @@ export function Reservations() {
         description="Customer product reservations with editable pickup status, store location, and date signals."
       />
       <DataTable
+        emptyTitle="No reservations yet"
+        emptyDescription="Customer reservations created from product detail pages will appear here."
         headers={['Reservation', 'Customer', 'Product', 'Store', 'Date', 'Status', 'Update']}
         rows={reservations.map((reservation) => [
           <span className="font-semibold text-slate-950">{reservation.id}</span>,
@@ -34,17 +37,17 @@ export function Reservations() {
           getStore(reservation.storeId)?.name,
           reservation.date,
           <Badge tone={toneForStatus(reservation.status)}>{reservation.status}</Badge>,
-          <select
+          <Select
             value={reservation.status}
             onChange={(event) => updateReservationStatus(reservation.id, event.target.value as Reservation['status'])}
-            className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+            className="h-9 font-semibold"
           >
             {statuses.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
             ))}
-          </select>,
+          </Select>,
         ])}
       />
     </div>
