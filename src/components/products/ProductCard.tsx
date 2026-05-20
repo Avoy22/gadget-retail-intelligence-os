@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Star } from 'lucide-react'
+import { ArrowRight, Star, Warehouse } from 'lucide-react'
 import type { Product } from '../../types'
 import { useAppData } from '../../context/AppDataContext'
 import { formatCurrency } from '../../utils/format'
@@ -13,12 +13,15 @@ export function ProductCard({ product }: ProductCardProps) {
   const { getTotalAvailable } = useAppData()
 
   return (
-    <article className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+    <article className="group overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5 transition duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-950/10">
       <Link to={`/products/${product.slug}`} className="block">
         <div className={`relative h-56 bg-linear-to-br ${product.accent}`}>
           <img src={product.image} alt={product.name} className="h-full w-full object-cover mix-blend-screen opacity-85" />
           <div className="absolute left-4 top-4">
             <Badge tone="info">{product.category}</Badge>
+          </div>
+          <div className="absolute bottom-4 right-4 rounded-full border border-white/30 bg-white/90 px-3 py-1 text-xs font-bold text-slate-800 shadow-lg backdrop-blur">
+            {product.status}
           </div>
         </div>
         <div className="p-5">
@@ -33,12 +36,20 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{product.description}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {product.tags.slice(0, 2).map((tag) => (
+              <Badge key={tag}>{tag}</Badge>
+            ))}
+          </div>
           <div className="mt-5 flex items-end justify-between">
             <div>
               <p className="text-xl font-bold text-slate-950">{formatCurrency(product.price)}</p>
-              <p className="text-xs text-slate-500">{getTotalAvailable(product.id)} available network-wide</p>
+              <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-slate-500">
+                <Warehouse size={14} className="text-cyan-700" />
+                {getTotalAvailable(product.id)} available network-wide
+              </p>
             </div>
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white transition group-hover:bg-cyan-700">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-white transition group-hover:bg-cyan-700">
               <ArrowRight size={17} />
             </span>
           </div>

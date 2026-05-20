@@ -6,6 +6,7 @@ export type BadgeTone = 'default' | 'success' | 'warning' | 'danger' | 'info'
 type BadgeProps = {
   children: ReactNode
   tone?: BadgeTone
+  className?: string
 }
 
 const tones = {
@@ -16,9 +17,9 @@ const tones = {
   info: 'border-cyan-200 bg-cyan-50 text-cyan-700',
 }
 
-export function Badge({ children, tone = 'default' }: BadgeProps) {
+export function Badge({ children, tone = 'default', className }: BadgeProps) {
   return (
-    <span className={cx('inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold', tones[tone])}>
+    <span className={cx('inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold leading-none', tones[tone], className)}>
       {children}
     </span>
   )

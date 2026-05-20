@@ -1,5 +1,6 @@
 import { Badge } from '../components/common/Badge'
 import { DataTable } from '../components/common/DataTable'
+import { Input, Select } from '../components/common/FormControls'
 import { PageHeader } from '../components/common/PageHeader'
 import { useAppData } from '../context/AppDataContext'
 import type { RepairRequest } from '../types'
@@ -23,6 +24,8 @@ export function Repairs() {
         description="Submitted warranty requests with editable status and technician notes persisted locally."
       />
       <DataTable
+        emptyTitle="No repair requests yet"
+        emptyDescription="Customer service intake submissions will appear here."
         headers={['Request', 'Customer', 'Product', 'Store', 'Issue', 'Priority', 'Status', 'Technician notes', 'Updated']}
         rows={repairRequests.map((request) => [
           <span className="font-semibold text-slate-950">{request.id}</span>,
@@ -34,22 +37,22 @@ export function Repairs() {
           getStore(request.storeId)?.name,
           <span className="inline-block max-w-xs truncate">{request.issue}</span>,
           <Badge tone={priorityTone(request.priority)}>{request.priority}</Badge>,
-          <select
+          <Select
             value={request.status}
             onChange={(event) => updateRepairStatus(request.id, event.target.value as RepairRequest['status'])}
-            className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-slate-700 outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+            className="h-9 font-semibold"
           >
             {statuses.map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
             ))}
-          </select>,
-          <input
+          </Select>,
+          <Input
             value={request.technicianNotes ?? ''}
             onChange={(event) => updateRepairNotes(request.id, event.target.value)}
             placeholder="Add notes"
-            className="h-9 w-64 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+            className="h-9 w-64"
           />,
           request.updatedAt,
         ])}

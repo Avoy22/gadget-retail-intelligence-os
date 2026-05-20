@@ -13,6 +13,8 @@ export function AvailabilityTable({ items }: AvailabilityTableProps) {
 
   return (
     <DataTable
+      emptyTitle="No store availability"
+      emptyDescription="This product does not have inventory signals yet."
       headers={['Store', 'Region', 'Available', 'Reserved', 'Status', 'Updated']}
       rows={items.map((item) => {
         const store = getStore(item.storeId)

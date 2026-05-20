@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Check, Minus, X } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Check, Plus, Minus, X } from 'lucide-react'
+import { Badge } from '../components/common/Badge'
+import { Button } from '../components/common/Button'
+import { Card } from '../components/common/Card'
+import { EmptyState } from '../components/common/EmptyState'
+import { Select } from '../components/common/FormControls'
 import { PageHeader } from '../components/common/PageHeader'
 import { useAppData } from '../context/AppDataContext'
 import type { Product } from '../types'
@@ -13,41 +18,35 @@ export function Compare() {
   const { activeProducts } = useAppData()
   const [slugs, setSlugs] = useState<string[]>(DEFAULT_SLUGS)
 
-  useEffect(() => {
-    setSlugs((prev) => {
-      const valid = prev.filter((slug) => activeProducts.some((product) => product.slug === slug))
-      if (valid.length >= 2) {
-        return valid.length === prev.length ? prev : valid
-      }
-      const filler = activeProducts
-        .filter((product) => !valid.includes(product.slug))
-        .slice(0, Math.max(0, 2 - valid.length))
-        .map((product) => product.slug)
-      return [...valid, ...filler]
-    })
-  }, [activeProducts])
+  const comparisonSlugs = useMemo(() => {
+    const valid = slugs.filter((slug) => activeProducts.some((product) => product.slug === slug))
+    if (valid.length >= 2) return valid
+    const filler = activeProducts
+      .filter((product) => !valid.includes(product.slug))
+      .slice(0, Math.max(0, 2 - valid.length))
+      .map((product) => product.slug)
+    return [...valid, ...filler]
+  }, [activeProducts, slugs])
 
-  const selected = slugs
+  const selected = comparisonSlugs
     .map((slug) => activeProducts.find((product) => product.slug === slug))
     .filter((product): product is Product => Boolean(product))
 
   const updateSlot = (index: number, slug: string) => {
-    setSlugs((prev) => {
-      const next = [...prev]
-      next[index] = slug
-      return next
-    })
+    const next = [...comparisonSlugs]
+    next[index] = slug
+    setSlugs(next)
   }
 
   const removeSlot = (index: number) => {
-    if (slugs.length <= 2) return
-    setSlugs((prev) => prev.filter((_, i) => i !== index))
+    if (comparisonSlugs.length <= 2) return
+    setSlugs(comparisonSlugs.filter((_, i) => i !== index))
   }
 
   const addSlot = () => {
-    if (slugs.length >= MAX_SLOTS) return
-    const unused = activeProducts.find((product) => !slugs.includes(product.slug))
-    if (unused) setSlugs((prev) => [...prev, unused.slug])
+    if (comparisonSlugs.length >= MAX_SLOTS) return
+    const unused = activeProducts.find((product) => !comparisonSlugs.includes(product.slug))
+    if (unused) setSlugs([...comparisonSlugs, unused.slug])
   }
 
   return (
@@ -57,50 +56,52 @@ export function Compare() {
         title="Product comparison"
         description="Compare premium devices side by side for assisted selling, buyer education, and merchandising decisions."
         action={
-          slugs.length < MAX_SLOTS ? (
-            <button
-              type="button"
-              onClick={addSlot}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-            >
+          comparisonSlugs.length < MAX_SLOTS ? (
+            <Button onClick={addSlot} variant="secondary" icon={<Plus size={16} />}>
               Add product
-            </button>
+            </Button>
           ) : null
         }
       />
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      {!selected.length ? (
+        <EmptyState title="No products to compare" description="Add active products to the catalog, then return to compare SKUs side by side." />
+      ) : null}
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-225 text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="w-44 px-5 py-4 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Attribute</th>
+              <tr className="border-b border-slate-200 bg-slate-50/90">
+                <th className="w-44 px-5 py-4 text-xs font-bold uppercase tracking-[0.08em] text-slate-500">Attribute</th>
                 {selected.map((product, index) => (
                   <th key={product.id} className="px-5 py-4 align-top">
                     <div className="flex items-start justify-between gap-2">
-                      <img src={product.image} alt={product.name} className="mb-3 h-28 w-full rounded-lg object-cover" />
-                      {slugs.length > 2 ? (
+                      <img src={product.image} alt={product.name} className="mb-3 h-28 w-full rounded-2xl object-cover shadow-sm" />
+                      {comparisonSlugs.length > 2 ? (
                         <button
                           type="button"
                           aria-label={`Remove ${product.name}`}
                           onClick={() => removeSlot(index)}
-                          className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                          className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                         >
                           <X size={16} />
                         </button>
                       ) : null}
                     </div>
-                    <select
+                    <Select
                       value={product.slug}
                       onChange={(event) => updateSlot(index, event.target.value)}
-                      className="mb-2 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm font-semibold text-slate-950 outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-100"
+                      className="mb-2"
                     >
                       {activeProducts.map((candidate) => (
-                        <option key={candidate.id} value={candidate.slug} disabled={candidate.slug !== product.slug && slugs.includes(candidate.slug)}>
+                        <option key={candidate.id} value={candidate.slug} disabled={candidate.slug !== product.slug && comparisonSlugs.includes(candidate.slug)}>
                           {candidate.name}
                         </option>
                       ))}
-                    </select>
-                    <p className="text-sm text-slate-500">{product.brand}</p>
+                    </Select>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm text-slate-500">{product.brand}</p>
+                      <Badge tone="info">{product.category}</Badge>
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -132,10 +133,17 @@ export function Compare() {
               </tr>
               {SPEC_ROWS.map((row) => {
                 const anyHas = selected.some((product) => product.specs[row])
+                const values = selected.map((product) => product.specs[row] ?? '')
+                const differs = new Set(values).size > 1
                 if (!anyHas) return null
                 return (
-                  <tr key={row}>
-                    <td className="px-5 py-4 font-semibold text-slate-500">{row}</td>
+                  <tr key={row} className={differs ? 'bg-amber-50/40' : undefined}>
+                    <td className="px-5 py-4 font-semibold text-slate-500">
+                      <span className="inline-flex items-center gap-2">
+                        {row}
+                        {differs ? <Badge tone="warning">differs</Badge> : null}
+                      </span>
+                    </td>
                     {selected.map((product) => (
                       <td key={product.id} className="px-5 py-4 text-slate-700">
                         {product.specs[row] ?? <Minus size={16} className="text-slate-300" />}
@@ -162,7 +170,7 @@ export function Compare() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </section>
   )
 }
