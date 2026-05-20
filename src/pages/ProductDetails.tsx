@@ -87,26 +87,27 @@ export function ProductDetails() {
             <Card>
               <CardHeader title="Reserve for pickup" description="Create a local reservation that appears in the admin pickup workflow." />
               <div className="p-5">
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Input required label="Full name" value={reservation.customer} onChange={(event) => setReservation((current) => ({ ...current, customer: event.target.value }))} placeholder="Customer name" />
-              <Input required label="Email" type="email" value={reservation.email} onChange={(event) => setReservation((current) => ({ ...current, email: event.target.value }))} placeholder="name@example.com" />
-              <Input label="Phone" value={reservation.phone} onChange={(event) => setReservation((current) => ({ ...current, phone: event.target.value }))} placeholder="Optional phone" />
-              <Select label="Pickup store" value={reservation.storeId} onChange={(event) => setReservation((current) => ({ ...current, storeId: event.target.value }))}>
-                {stores.map((store) => (
-                  <option key={store.id} value={store.id}>
-                    {store.name}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <Button type="submit" className="mt-4" fullWidth icon={<CheckCircle2 size={17} />}>
-              Reserve product
-            </Button>
-            {reserved ? (
-              <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
-                Reservation saved for admin pickup workflow.
-              </div>
-            ) : null}
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Input required label="Full name" value={reservation.customer} onChange={(event) => setReservation((current) => ({ ...current, customer: event.target.value }))} placeholder="Customer name" />
+                  <Input required label="Email" type="email" value={reservation.email} onChange={(event) => setReservation((current) => ({ ...current, email: event.target.value }))} placeholder="name@example.com" />
+                  <Input label="Phone" value={reservation.phone} onChange={(event) => setReservation((current) => ({ ...current, phone: event.target.value }))} placeholder="Optional phone" />
+                  <Select label="Pickup store" value={reservation.storeId} onChange={(event) => setReservation((current) => ({ ...current, storeId: event.target.value }))}>
+                    {stores.map((store) => (
+                      <option key={store.id} value={store.id}>
+                        {store.name}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+                <Button type="submit" className="mt-4" fullWidth icon={<CheckCircle2 size={17} />}>
+                  Reserve product
+                </Button>
+                {reserved ? (
+                  <div className="mt-3 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    <CheckCircle2 size={16} />
+                    Reservation saved for admin pickup workflow.
+                  </div>
+                ) : null}
               </div>
             </Card>
           </form>
@@ -143,10 +144,13 @@ export function ProductDetails() {
           <SectionHeader title="Related products" description="Alternative SKUs from the same category for upsell or substitution." />
           <div className="grid gap-4 md:grid-cols-3">
             {related.map((item) => (
-              <Link key={item.id} to={`/products/${item.slug}`} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-950/5 transition hover:-translate-y-0.5 hover:shadow-xl">
-                <p className="text-sm font-semibold text-slate-500">{item.brand}</p>
-                <p className="mt-1 font-bold text-slate-950">{item.name}</p>
-                <p className="mt-2 text-sm text-cyan-700">{formatCurrency(item.price)}</p>
+              <Link key={item.id} to={`/products/${item.slug}`} className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-950/5 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-950/10">
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{item.brand}</p>
+                <p className="mt-2 font-bold text-slate-950">{item.name}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <p className="text-base font-bold text-cyan-700">{formatCurrency(item.price)}</p>
+                  <ArrowRight size={16} className="text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-cyan-700" />
+                </div>
               </Link>
             ))}
           </div>

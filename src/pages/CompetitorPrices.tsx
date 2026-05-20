@@ -33,6 +33,7 @@ export function CompetitorPrices() {
           const product = getProduct(item.productId)
           const delta = item.price - (product?.price ?? 0)
           const Icon = delta < 0 ? ArrowDownRight : delta > 0 ? ArrowUpRight : Minus
+          const deltaTone = delta < 0 ? 'text-rose-700' : delta > 0 ? 'text-emerald-700' : 'text-slate-500'
           return [
             <span className="font-semibold text-slate-950">{product?.name}</span>,
             formatCurrency(product?.price ?? 0),
@@ -48,16 +49,17 @@ export function CompetitorPrices() {
               onChange={(event) => updateCompetitorPrice(item.id, { price: Number(event.target.value) })}
               className="h-9 w-28"
             />,
-            <span className={delta < 0 ? 'inline-flex items-center gap-1 font-semibold text-rose-700' : 'inline-flex items-center gap-1 font-semibold text-emerald-700'}>
+            <span className={`inline-flex items-center gap-1 font-bold ${deltaTone}`}>
               <Icon size={16} />
-              {formatCurrency(Math.abs(delta))}
+              {delta === 0 ? 'Match' : formatCurrency(Math.abs(delta))}
             </span>,
             <div className="flex items-center gap-2">
               <Badge tone={availabilityTone(item.availability)}>{item.availability}</Badge>
               <Select
                 value={item.availability}
                 onChange={(event) => updateCompetitorPrice(item.id, { availability: event.target.value as CompetitorPrice['availability'] })}
-                className="h-9"
+                className="h-9 w-36"
+                aria-label="Update availability"
               >
                 {availabilityOptions.map((availability) => (
                   <option key={availability} value={availability}>
